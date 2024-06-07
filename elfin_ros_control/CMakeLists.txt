@@ -142,7 +142,10 @@ include_directories(
 #add_dependencies(elfin_hardware_interface ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 # Declare a C++ executable
-add_executable(elfin_hardware_interface src/elfin_hardware_interface.cpp)
+add_executable(elfin_hardware_interface 
+src/elfin_hardware_interface.cpp 
+src/chassis_ethercat_driver.cpp 
+src/motor_ethercat_client.cpp )
 
 # Add cmake target dependencies of the executable
 # same as for the library above

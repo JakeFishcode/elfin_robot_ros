@@ -122,6 +122,7 @@ public:
    */
   template <typename T>
   uint8_t writeSDO(int slave_no, uint16_t index, uint8_t subidx, T value) const;
+  void writeSDO(int slave, int index, int subindex, std::vector<uint8_t> data);
 
   /**
    * \brief read the SDO object of the given slave no
@@ -132,6 +133,7 @@ public:
    */
   template <typename T>
   T readSDO(int slave_no, uint16_t index, uint8_t subidx) const;
+  std::vector<uint8_t> readSDO(int slave, int index, int subindex, int byte_size);
 
   /**
    * \brief get the number of clients

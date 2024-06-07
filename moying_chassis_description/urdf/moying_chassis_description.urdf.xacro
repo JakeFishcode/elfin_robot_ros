@@ -1,0 +1,110 @@
+<?xml version="1.0" ?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="moying_chassis_description">
+  <xacro:macro name="moying_chassis_description">
+  <xacro:include filename="$(find moying_chassis_description)/urdf/mecanum_wheel.urdf.xacro"/>
+  <joint
+    name="box_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent link="base_link" />
+    <child
+      link="chassis_link" />
+    <dynamics
+      friction="0.1" />
+  </joint>
+
+
+  <link
+    name="chassis_link">
+    <inertial>
+      <origin
+        xyz="-2.79523220367159E-06 8.43539256652524E-05 1.5347012569763E-06"
+        rpy="0 0 0" />
+      <mass
+        value="50.0" />
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://moying_chassis_description/meshes/chassis_link.STL" scale="1000.0 1000.00 1000.00"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <!-- <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://moying_chassis_description/meshes/chassis_link.STL" scale="1000.0 1000.00 1000.00"/>
+      </geometry>
+    </collision> -->
+  </link>
+
+
+  <xacro:mecanum_wheel prefix="forward_left" connected_to="chassis_link"
+                      wheel_x_offset="-0.26591"
+                      wheel_y_offset="${-0.2225+0.048}"
+                      wheel_z_offset="7.5408E-02"
+                      wheel_rpyr_offset="0"
+                      wheel_rpyp_offset="0"
+                      wheel_rpyy_offset="0"
+                      reflect="1" 
+                      max_effort="5" max_velocity="50"/>
+  <xacro:mecanum_wheel prefix="forward_right" connected_to="chassis_link"
+                      wheel_x_offset="-0.26591"
+                      wheel_y_offset="${0.2325-0.048}"
+                      wheel_z_offset="7.5408E-02"
+                      wheel_rpyr_offset="0"
+                      wheel_rpyp_offset="0"
+                      wheel_rpyy_offset="0"
+                      reflect="-1" 
+                      max_effort="5" max_velocity="50"/>
+
+  <xacro:mecanum_wheel prefix="back_left" connected_to="chassis_link"
+                      wheel_x_offset="0.27097"
+                      wheel_y_offset="${-0.2225+0.048}"
+                      wheel_z_offset="7.5408E-02"
+                      wheel_rpyr_offset="0"
+                      wheel_rpyp_offset="0"
+                      wheel_rpyy_offset="0"
+                      reflect="-1" 
+                      max_effort="5" max_velocity="50"/>
+  <xacro:mecanum_wheel prefix="back_right" connected_to="chassis_link"
+                    wheel_x_offset="0.27097"
+                    wheel_y_offset="${0.2325-0.048}"
+                    wheel_z_offset="7.5408E-02" wheel_rpyr_offset="0" wheel_rpyp_offset="0"
+                    wheel_rpyy_offset="0"
+                    reflect="1" 
+                    max_effort="5" max_velocity="50"/>
+
+
+  <link name="ex_link"/>
+  <joint
+    name="ex_joint"
+    type="fixed">
+    <origin
+      xyz="-0.3197 0 0.385"
+      rpy="1.5708 0 3.1416" />
+    <parent
+      link="chassis_link" />
+    <child
+      link="ex_link" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+  </xacro:macro>
+</robot>

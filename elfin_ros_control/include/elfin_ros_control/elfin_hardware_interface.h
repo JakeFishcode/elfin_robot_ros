@@ -65,6 +65,7 @@ Created on Tue Sep 25 10:16 2018
 #include <controller_manager_msgs/ListControllers.h>
 
 #include "elfin_ethercat_driver/elfin_ethercat_driver.h"
+#include "elfin_ros_control/chassis_ethercat_driver.hpp"
 
 namespace elfin_ros_control {
 
@@ -117,6 +118,7 @@ private:
 
     hardware_interface::JointStateInterface jnt_state_interface_;
     hardware_interface::PositionJointInterface jnt_position_cmd_interface_;
+    hardware_interface::VelocityJointInterface jnt_velocity_cmd_interface_;
     hardware_interface::EffortJointInterface jnt_effort_cmd_interface_;
     elfin_hardware_interface::PosTrqJointInterface jnt_postrq_cmd_interface_;
     hardware_interface::PosVelJointInterface jnt_posvel_cmd_interface_;
@@ -126,6 +128,8 @@ private:
 
     ros::Time read_update_time_;
     ros::Duration read_update_dur_;
+
+    ChassisEthercatDriver* chassis_handle_;
 
     std::vector<bool> pre_switch_flags_;
     std::vector<boost::shared_ptr<boost::mutex> > pre_switch_mutex_ptrs_;

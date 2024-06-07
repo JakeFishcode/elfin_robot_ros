@@ -339,6 +339,11 @@ uint8_t EtherCatManager::writeSDO(int slave_no, uint16_t index, uint8_t subidx, 
   ret = ec_SDOwrite(slave_no, index, subidx, FALSE, sizeof(value), &value, EC_TIMEOUTSAFE);
   return ret;
 }
+void EtherCatManager::writeSDO(int slave, int index, int subindex, std::vector<uint8_t> data)
+{
+    int byte_size = data.size();
+    ec_SDOwrite(slave, index, subindex, FALSE, byte_size, data.data(), EC_TIMEOUTSAFE);
+}
 
 template <typename T>
 T EtherCatManager::readSDO(int slave_no, uint16_t index, uint8_t subidx) const
@@ -352,6 +357,18 @@ T EtherCatManager::readSDO(int slave_no, uint16_t index, uint8_t subidx) const
   }
   return val;
 }
+std::vector<uint8_t> EtherCatManager::readSDO(int slave, int index, int subindex, int byte_size)
+{
+    int size = byte_size;   // 实际读到的字节数会返回。
+    std::vector<uint8_t> data(size);
+    ec_SDOread(slave, index, subindex, FALSE, &size, data.data(), EC_TIMEOUTSAFE);
+    std::vector<uint8_t> ret(size);
+    for (int idx = 0; idx < size; ++idx)
+        ret[idx] = data[idx];
+
+    return ret;
+}
+
 
 template uint8_t EtherCatManager::writeSDO<char> (int slave_no, uint16_t index, uint8_t subidx, char value) const;
 template uint8_t EtherCatManager::writeSDO<int> (int slave_no, uint16_t index, uint8_t subidx, int value) const;

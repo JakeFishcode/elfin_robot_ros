@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="moying_chassis">
+  <xacro:arg name="mode" default="gazebo"/> 
+  <xacro:arg name="settings" default=""/> 
+  <xacro:property name="select_mode" value="$(arg mode)"/>
+  <xacro:property name="select_settings" value="$(arg settings)"/>
+  <xacro:include filename="$(find moying_chassis_description)/urdf/moying_chassis_description.urdf.xacro"/>
+
+  <link name="base_link"/>
+
+  <!-- urdf description-->
+  <xacro:moying_chassis_description/>
+  <xacro:wheel_transmission prefix="forward_right"/>
+  <xacro:wheel_transmission prefix="forward_left"/>
+  <xacro:wheel_transmission prefix="back_right"/>
+  <xacro:wheel_transmission prefix="back_left"/>
+
+
+
+</robot>
+

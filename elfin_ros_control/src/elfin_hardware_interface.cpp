@@ -38,6 +38,7 @@ Created on Tue Sep 25 10:16 2018
 // author: Cong Liu
 // update the include file
 #include "elfin_ros_control/elfin_hardware_interface.h"
+#include "elfin_ros_control/chassis_ethercat_driver.hpp"
 
 namespace elfin_ros_control {
 
@@ -107,6 +108,16 @@ ElfinHWInterface::ElfinHWInterface(elfin_ethercat_driver::EtherCatManager *manag
         pre_switch_mutex_ptrs_[i]=boost::shared_ptr<boost::mutex>(new boost::mutex);
     }
 
+    chassis_handle_ = new ChassisEthercatDriver(manager, nh);
+
+    for(auto& wh: chassis_handle_->wheel_handles)
+    {
+        hardware_interface::JointStateHandle jnt_state_handle_tmp1(wh.name,
+                                                                  &wh.pos_state,
+                                                                  &wh.vel_state,
+                                                                  &wh.effort_state);
+        jnt_state_interface_.registerHandle(jnt_state_handle_tmp1);
+    }
     // Initialize the state and command interface
     for(size_t i=0; i<module_infos_.size(); i++)
     {
@@ -135,6 +146,13 @@ ElfinHWInterface::ElfinHWInterface(elfin_ethercat_driver::EtherCatManager *manag
         jnt_position_cmd_interface_.registerHandle(jnt_handle_tmp2);
     }
     registerInterface(&jnt_position_cmd_interface_);
+    for(auto& wh: chassis_handle_->wheel_handles)
+    {
+        hardware_interface::JointHandle jnt_handle_tmp1(jnt_state_interface_.getHandle(wh.name),
+                                                        &wh.cmd);
+        jnt_velocity_cmd_interface_.registerHandle(jnt_handle_tmp1);
+    }
+    registerInterface(&jnt_velocity_cmd_interface_);
 
     for(size_t i=0; i<module_infos_.size(); i++)
     {
@@ -526,6 +544,13 @@ void ElfinHWInterface::read_init()
     clock_gettime(CLOCK_REALTIME, &read_update_tick);
     read_update_time_.sec=read_update_tick.tv_sec;
     read_update_time_.nsec=read_update_tick.tv_nsec;
+    for(auto &wh:chassis_handle_->wheel_handles)
+    {
+    wh.cmd=0.0;
+    wh.vel_state=0.0;
+    wh.pos_state=0.0;
+    wh.motor_client->enable();
+    }
 
     for(size_t i=0; i<module_infos_.size(); i++)
     {
@@ -583,6 +608,11 @@ void ElfinHWInterface::read_update(const ros::Time &time_now)
         module_infos_[i].axis2.velocity=-1*vel_count2/module_infos_[i].axis2.count_rad_per_s_factor;
         module_infos_[i].axis2.effort=-1*trq_count2/module_infos_[i].axis2.count_Nm_factor;
     }
+    for(auto& wh:chassis_handle_->wheel_handles)
+    {
+        wh.vel_state = wh.motor_client->getMotorVelState();
+        wh.pos_state = wh.motor_client->getMotorPosState();
+    }
 
 }
 
@@ -608,18 +638,22 @@ void ElfinHWInterface::write_update()
 
         if(!is_preparing_switch)
         {
-            double vel_ff_cmd_count1=-1 * module_infos_[i].axis1.vel_ff_cmd * module_infos_[i].axis1.count_rad_per_s_factor / 16.25;
-            double vel_ff_cmd_count2=-1 * module_infos_[i].axis2.vel_ff_cmd * module_infos_[i].axis2.count_rad_per_s_factor / 16.25;
+            double vel_ff_cmd_count1=-1 * module_infos_[i].axis1.vel_ff_cmd * module_infos_[i].axis1.count_rad_per_s_factor / 16.0;
+            double vel_ff_cmd_count2=-1 * module_infos_[i].axis2.vel_ff_cmd * module_infos_[i].axis2.count_rad_per_s_factor / 16.0;
 
             module_infos_[i].client_ptr->setAxis1VelFFCnt(int16_t(vel_ff_cmd_count1));
             module_infos_[i].client_ptr->setAxis2VelFFCnt(int16_t(vel_ff_cmd_count2));
 
-            double torque_cmd_count1=-1 * module_infos_[i].axis1.effort * module_infos_[i].axis1.count_Nm_factor;
-            double torque_cmd_count2=-1 * module_infos_[i].axis2.effort * module_infos_[i].axis2.count_Nm_factor;
+            double torque_cmd_count1=-1 * module_infos_[i].axis1.effort_cmd * module_infos_[i].axis1.count_Nm_factor;
+            double torque_cmd_count2=-1 * module_infos_[i].axis2.effort_cmd * module_infos_[i].axis2.count_Nm_factor;
 
             module_infos_[i].client_ptr->setAxis1TrqCnt(int16_t(torque_cmd_count1));
             module_infos_[i].client_ptr->setAxis2TrqCnt(int16_t(torque_cmd_count2));
         }
+    }
+    for(auto& wh:chassis_handle_->wheel_handles)
+    {
+        wh.motor_client->setMotorCommand(wh.cmd);
     }
 }
 

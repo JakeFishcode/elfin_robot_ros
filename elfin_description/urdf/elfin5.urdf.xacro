@@ -6,19 +6,30 @@
   <xacro:include filename="$(find elfin_description)/urdf/elfin_robot.gazebo" />
   
   <xacro:include filename="$(find elfin_description)/urdf/elfin_transmission.xacro" />
-  
+
+  <xacro:include filename="$(find moying_chassis_description)/urdf/moying_chassis_description.urdf.xacro"/>
+  <xacro:include filename="$(find moying_chassis_description)/urdf/mecanum_wheel.urdf.xacro"/>
+
+  <link name="base_link"/>
+
+  <!-- urdf description-->
+  <xacro:moying_chassis_description/>
+  <!-- <xacro:wheel_transmission prefix="forward_right"/>
+  <xacro:wheel_transmission prefix="forward_left"/>
+  <xacro:wheel_transmission prefix="back_right"/>
+  <xacro:wheel_transmission prefix="back_left"/>
+   -->
   <xacro:property name="PI" value="3.1415926535897931"/>
   
   <xacro:property name="density" value="3.09"/>
   
-  <link name="world"/>
   
   <joint name="world_base" type="fixed">
     <origin
       xyz="0 0 0"
-      rpy="0 0 0" />
+      rpy="1.57 0 3.1415" />
     <parent
-      link="world" />
+      link="ex_link" />
     <child
       link="elfin_base_link" />
   </joint>

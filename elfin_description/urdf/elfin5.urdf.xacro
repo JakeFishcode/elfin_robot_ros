@@ -14,14 +14,14 @@
 
   <!-- urdf description-->
   <xacro:moying_chassis_description/>
-  <!-- <xacro:wheel_transmission prefix="forward_right"/>
+  <xacro:wheel_transmission prefix="forward_right"/>
   <xacro:wheel_transmission prefix="forward_left"/>
   <xacro:wheel_transmission prefix="back_right"/>
   <xacro:wheel_transmission prefix="back_left"/>
-   -->
+  
   <xacro:property name="PI" value="3.1415926535897931"/>
   
-  <xacro:property name="density" value="3.09"/>
+  <xacro:property name="density" value="0.001"/>
   
   
   <joint name="world_base" type="fixed">

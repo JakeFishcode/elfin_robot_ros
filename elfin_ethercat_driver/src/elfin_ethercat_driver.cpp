@@ -237,7 +237,7 @@ ElfinEtherCATDriver::ElfinEtherCATDriver(EtherCatManager *manager, std::string d
 
     // Recognize the Positions
     bool recognize_flag;
-    ed_nh_.param<bool>("automatic_recognition", recognize_flag, true);
+    ed_nh_.param<bool>("automatic_recognition", recognize_flag, false);
     if(recognize_flag)
     {
         printf("\n recognizing joint positions, please wait a few minutes ... ... \n");
